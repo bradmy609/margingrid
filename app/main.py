@@ -14,14 +14,13 @@ url = "mysql://admin:vertical@database-2.cood7ompdfrc.us-east-2.rds.amazonaws.co
 
 engine = create_engine(url)
 
-df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
-
 @app.route("/")
 def hello():
         return "<h1>Hello there!</h1>"
 
 @app.route("/api/age")
 def data_age():
+        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         last_timestamp = df['index'].max()
         current_timestamp = datetime.now().timestamp()
 
@@ -30,6 +29,7 @@ def data_age():
 
 @app.route("/api/tickers")
 def all_tickers():
+        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         length = len(df)
         frame = df.copy()
         frame = frame.dropna(axis=1, how='any')
@@ -39,6 +39,7 @@ def all_tickers():
  
 @app.route("/api/ma/<ticker>/<period>/<quantity>")
 def ma(ticker, period, quantity):
+        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         ticker = str(ticker).upper()
         period = int(period)
         quantity = int(quantity)
@@ -219,12 +220,11 @@ def trade_coins(base, minutes, investment):
 
         return result_dict
 
-@app.route('/api/MA/<base>/<minutes>/<investment>/<deviations>', methods = ['POST'])
-def ma_grid(base, minutes, investment, deviations):
+@app.route('/api/grid/ma/<base>/<minutes>/<investment>', methods = ['POST'])
+def ma_grid(base, minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         minutes = int(minutes)
         investment = int(investment)
-        deviations = int(deviations)
         data = request.json
         trade_data = data['data']
         if base != 'USDT':
@@ -238,12 +238,11 @@ def ma_grid(base, minutes, investment, deviations):
                 name = str(d['name'])
                 percent = float(d['percent'])/100
                 period = int(d['period'])
-                print(period)
-                print(deviations)
+                std = int(d['std'])
                 if minutes + period >= len(df):
                         period = len(df) - minutes
                 pair = '{}/{}'.format(base, name)
-                ticker_quantity, ticker2_quantity, result, buy_trans, sell_trans = execute_grid(df, minutes, name, base, spread, orders, investment*percent, period, deviations)
+                ticker_quantity, ticker2_quantity, result, buy_trans, sell_trans = execute_grid(df, minutes, name, base, spread, orders, investment*percent, period, std)
 
                 result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': ticker2_quantity, 'trade_currency': ticker_quantity,
                  'buy_transactions': len(buy_trans), 'sell_transactions': len(sell_trans), 'base_ticker': base, 'trade_ticker': name, 'pair': pair}
