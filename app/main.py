@@ -16,6 +16,10 @@ engine = create_engine(url)
 
 df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
 
+@app.route("/")
+def hello():
+        return "<h1>Hello there!</h1>"
+
 @app.route("/api/age")
 def data_age():
         last_timestamp = df['index'].max()
