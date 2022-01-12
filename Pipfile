@@ -9,6 +9,7 @@ gunicorn = "*"
 flask-cors = "*"
 pandas = "*"
 sqlalchemy = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
