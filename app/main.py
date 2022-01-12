@@ -247,9 +247,9 @@ def ma_grid(base, minutes, investment):
                 result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': ticker2_quantity, 'trade_currency': ticker_quantity,
                  'buy_transactions': len(buy_trans), 'sell_transactions': len(sell_trans), 'base_ticker': base, 'trade_ticker': name, 'pair': pair}
                 
-                df_data[pair] = [result, spread, orders, len(buy_trans), len(sell_trans)]
+                df_data[pair] = [result, spread, orders, len(buy_trans), len(sell_trans), std]
 
-        frame = pd.DataFrame(df_data, index=['Value', 'Spread', 'Orders', 'Buy Transactions', 'Sell Transactions'])
+        frame = pd.DataFrame(df_data, index=['Value', 'Spread', 'Orders', 'Buy Transactions', 'Sell Transactions', 'Deviations'])
         frame = frame.swapaxes('index', 'columns')
         html_table = frame.to_html()
         result_dict['html'] = html_table
