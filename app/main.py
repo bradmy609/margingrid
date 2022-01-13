@@ -1,12 +1,14 @@
+import os
 from flask import Flask, request, make_response
 import pandas as pd
 from sqlalchemy import *
+from flask.helpers import send_from_directory
 from flask_cors import CORS
 from datetime import datetime
 import json
 from .execute_grid import execute_grid
  
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../../crypto-web/build')
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -14,9 +16,14 @@ url = "mysql://admin:vertical@database-2.cood7ompdfrc.us-east-2.rds.amazonaws.co
 
 engine = create_engine(url)
 
-@app.route("/")
-def hello():
-        return "<h1>Hello there!</h1>"
+# Serve React App
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/api/age")
 def data_age():
@@ -229,6 +236,8 @@ def ma_grid(base, minutes, investment):
         trade_data = data['data']
         if base != 'USDT':
                 base_change = df[base][-minutes::minutes-1].pct_change().iloc[-1]
+        else:
+                base_change = str(0.0)
 
         result_dict = {}
         df_data = {}
@@ -241,7 +250,7 @@ def ma_grid(base, minutes, investment):
                 std = int(d['std'])
                 if minutes + period >= len(df):
                         period = len(df) - minutes
-                pair = '{}/{}'.format(base, name)
+                pair = '{}/{}'.format(name, base)
                 ticker_quantity, ticker2_quantity, result, buy_trans, sell_trans = execute_grid(df, minutes, name, base, spread, orders, investment*percent, period, std)
 
                 result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': ticker2_quantity, 'trade_currency': ticker_quantity,
@@ -253,8 +262,7 @@ def ma_grid(base, minutes, investment):
         frame = frame.swapaxes('index', 'columns')
         html_table = frame.to_html()
         result_dict['html'] = html_table
-        if base != 'USDT':
-                result_dict['base_change'] = str(base_change)
+        result_dict['base_change'] = str(base_change)
 
         return result_dict
 
