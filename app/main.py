@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 from .execute_grid import execute_grid
  
-app = Flask(__name__, static_folder='../../crypto-web/build')
+app = Flask(__name__, static_folder='/build')
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
