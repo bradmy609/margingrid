@@ -39,7 +39,7 @@ def all_tickers():
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         length = len(df)
         frame = df.copy()
-        frame = frame.fillna(value=0, inplace=True)
+        frame.fillna(value=0, inplace=True)
         all_tickers = frame.drop('index', axis=1).columns.to_list()
         res = {"data": all_tickers, "length": length}
         return res
