@@ -190,14 +190,13 @@ def borrow_coins(minutes, investment):
                 minutes = len(df)-1
                 
         minutes_df = df.iloc[[-int(minutes)]]
+        minutes_df.index = "Start Price"
         ticker_list = []
         percent_list = []
         for obj in data['data']:
                 ticker_list.append(obj['name'])
                 percent_list.append(obj['percent'])
         res_df = minutes_df[ticker_list]
-        res_df = res_df.copy()
-        res_df.rename(index={len(df)-int(minutes) :'Start Price'}, inplace=True)
         res_df.loc["Portfolio Percent"] = percent_list
 
         start_val_list = []
@@ -289,6 +288,7 @@ def ma_grid(base, minutes, investment):
 
         data = request.json
         trade_data = data['data']
+
         if base != 'USDT':
                 base_change = df[base][-minutes::minutes-1].pct_change().iloc[-1]
         else:
