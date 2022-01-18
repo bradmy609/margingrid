@@ -68,6 +68,7 @@ def ma(ticker, period, quantity):
 @app.route("/api/pricedelta/<startMinutes>/<stopMinutes>/<top>/<quantity>")
 def reroute(startMinutes, top, quantity, stopMinutes=0):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = df[df.iloc[0].dropna().index].set_index('index')
         startMinutes = int(startMinutes)
         if startMinutes > len(df):
                 startMinutes = len(df)
@@ -107,6 +108,7 @@ def hodl_table(minutes, investment):
         data = request.json
         minutes = int(minutes)
         investment = int(investment)
+        df = df[df.iloc[0].dropna().index].set_index('index')
         df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
@@ -161,6 +163,7 @@ def borrow_coins(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
         minutes = int(minutes)
+        df = df[df.iloc[0].dropna().index].set_index('index')
         df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
@@ -206,6 +209,7 @@ def trade_coins(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         base = str(base)
+        df = df[df.iloc[0].dropna().index].set_index('index')
         df.fillna(value=0, inplace=True)
         data = request.json
         trade_data = data['data']
@@ -242,6 +246,7 @@ def ma_grid(base, minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         minutes = int(minutes)
         investment = int(investment)
+        df = df[df.iloc[0].dropna().index].set_index('index')
         df.fillna(value=0, inplace=True)
         data = request.json
         trade_data = data['data']
