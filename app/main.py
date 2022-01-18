@@ -39,7 +39,7 @@ def all_tickers():
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         length = len(df)
         frame = df.copy()
-        frame = frame.dropna(axis=1, how='any')
+        frame = frame.fillna(value=0, inplace=True)
         all_tickers = frame.drop('index', axis=1).columns.to_list()
         res = {"data": all_tickers, "length": length}
         return res
@@ -105,6 +105,8 @@ def reroute(startMinutes, top, quantity, stopMinutes=0):
 def hodl_table(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
+        if minutes > len(df):
+                minutes = len(df)-1
         minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
         ticker_list = []
         percent_list = []
@@ -155,6 +157,8 @@ def hodl_table(minutes, investment):
 def borrow_coins(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
+        if minutes > len(df):
+                minutes = len(df)-1
         minutes_df = df.iloc[[-int(minutes)]]
         ticker_list = []
         percent_list = []
