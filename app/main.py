@@ -190,7 +190,7 @@ def borrow_coins(minutes, investment):
                 minutes = len(df)-1
                 
         minutes_df = df.iloc[[-int(minutes)]]
-        minutes_df.index = "Start Price"
+        minutes_df.index = ["Start Price"]
         ticker_list = []
         percent_list = []
         for obj in data['data']:
