@@ -119,7 +119,7 @@ def hodl_table(minutes, investment):
                 
         for row in rows_with_nan:
                 df.drop(row, inplace=True)
-                
+
         df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
@@ -174,7 +174,7 @@ def borrow_coins(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
         minutes = int(minutes)
-        df = df[df.iloc[0].dropna().index].set_index('index')
+        df = df[df.iloc[0].dropna().index]
 
         rows_with_nan = []
         for index, row in df.iterrows():
@@ -197,7 +197,7 @@ def borrow_coins(minutes, investment):
                 percent_list.append(obj['percent'])
         res_df = minutes_df[ticker_list]
         res_df = res_df.copy()
-        res_df.rename(index={len(df)-int(minutes) :'Start Price'},inplace=True)
+        res_df.rename(index={len(df)-int(minutes) :'Start Price'}, inplace=True)
         res_df.loc["Portfolio Percent"] = percent_list
 
         start_val_list = []
