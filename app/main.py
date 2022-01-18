@@ -70,7 +70,7 @@ def ma(ticker, period, quantity):
 @app.route("/api/pricedelta/<startMinutes>/<stopMinutes>/<top>/<quantity>")
 def reroute(startMinutes, top, quantity, stopMinutes=0):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
-        df = df[df.iloc[0].dropna().index].set_index('index')
+        df = df[df.iloc[0].dropna().index]
         startMinutes = int(startMinutes)
         if startMinutes > len(df):
                 startMinutes = len(df)
