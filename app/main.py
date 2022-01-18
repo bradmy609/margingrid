@@ -39,6 +39,7 @@ def all_tickers():
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         length = len(df)
         frame = df.copy()
+        frame = frame[frame.iloc[0].dropna().index].set_index('index')
         frame.fillna(value=0, inplace=True)
         all_tickers = frame.drop('index', axis=1).columns.to_list()
         res = {"data": all_tickers, "length": length}
@@ -51,6 +52,7 @@ def ma(ticker, period, quantity):
         period = int(period)
         quantity = int(quantity)
         frame = df.copy()
+        frame = frame[frame.iloc[0].dropna().index].set_index('index')
         frame['index'] = pd.to_datetime(frame['index'], unit='s')
         ndf = frame.set_index('index')
         ticker_df = ndf[[ticker]]
