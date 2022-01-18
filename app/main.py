@@ -105,6 +105,9 @@ def reroute(startMinutes, top, quantity, stopMinutes=0):
 def hodl_table(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
+        minutes = int(minutes)
+        investment = int(investment)
+        df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
         minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
@@ -157,6 +160,8 @@ def hodl_table(minutes, investment):
 def borrow_coins(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
+        minutes = int(minutes)
+        df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
         minutes_df = df.iloc[[-int(minutes)]]
@@ -201,6 +206,7 @@ def trade_coins(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         base = str(base)
+        df.fillna(value=0, inplace=True)
         data = request.json
         trade_data = data['data']
         if base != 'USDT':
@@ -236,6 +242,7 @@ def ma_grid(base, minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         minutes = int(minutes)
         investment = int(investment)
+        df.fillna(value=0, inplace=True)
         data = request.json
         trade_data = data['data']
         if base != 'USDT':
