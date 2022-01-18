@@ -111,6 +111,15 @@ def hodl_table(minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         df = df[df.iloc[0].dropna().index].set_index('index')
+        rows_with_nan = []
+        for index, row in df.iterrows():
+                is_nan_series = row.isnull()
+                if is_nan_series.any():
+                        rows_with_nan.append(index)
+                
+        for row in rows_with_nan:
+                df.drop(row, inplace=True)
+                
         df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
@@ -166,9 +175,20 @@ def borrow_coins(minutes, investment):
         data = request.json
         minutes = int(minutes)
         df = df[df.iloc[0].dropna().index].set_index('index')
+
+        rows_with_nan = []
+        for index, row in df.iterrows():
+                is_nan_series = row.isnull()
+                if is_nan_series.any():
+                        rows_with_nan.append(index)
+                
+        for row in rows_with_nan:
+                df.drop(row, inplace=True)
+
         df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
+                
         minutes_df = df.iloc[[-int(minutes)]]
         ticker_list = []
         percent_list = []
@@ -212,6 +232,15 @@ def trade_coins(base, minutes, investment):
         investment = int(investment)
         base = str(base)
         df = df[df.iloc[0].dropna().index].set_index('index')
+        rows_with_nan = []
+        for index, row in df.iterrows():
+                is_nan_series = row.isnull()
+                if is_nan_series.any():
+                        rows_with_nan.append(index)
+                
+        for row in rows_with_nan:
+                df.drop(row, inplace=True)
+
         df.fillna(value=0, inplace=True)
         data = request.json
         trade_data = data['data']
@@ -249,7 +278,15 @@ def ma_grid(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         df = df[df.iloc[0].dropna().index].set_index('index')
-        df.fillna(value=0, inplace=True)
+        rows_with_nan = []
+        for index, row in df.iterrows():
+                is_nan_series = row.isnull()
+                if is_nan_series.any():
+                        rows_with_nan.append(index)
+                
+        for row in rows_with_nan:
+                df.drop(row, inplace=True)
+
         data = request.json
         trade_data = data['data']
         if base != 'USDT':
