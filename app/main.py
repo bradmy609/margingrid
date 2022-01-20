@@ -5,8 +5,8 @@ from sqlalchemy import *
 from flask.helpers import send_from_directory
 from flask_cors import CORS
 from datetime import datetime
-import json
 from .execute_grid import execute_grid
+from .cleanDF import cleanDF
  
 app = Flask(__name__, static_folder='../build')
 
@@ -71,6 +71,7 @@ def ma(ticker, period, quantity):
 def reroute(startMinutes, top, quantity, stopMinutes=0):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         df = df[df.iloc[0].dropna().index]
+        
         startMinutes = int(startMinutes)
         if startMinutes > len(df):
                 startMinutes = len(df)
@@ -110,17 +111,9 @@ def hodl_table(minutes, investment):
         data = request.json
         minutes = int(minutes)
         investment = int(investment)
-        df = df[df.iloc[0].dropna().index].set_index('index')
-        rows_with_nan = []
-        for index, row in df.iterrows():
-                is_nan_series = row.isnull()
-                if is_nan_series.any():
-                        rows_with_nan.append(index)
-                
-        for row in rows_with_nan:
-                df.drop(row, inplace=True)
+        
+        df = cleanDF(df)
 
-        df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
         minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
@@ -174,18 +167,9 @@ def borrow_coins(minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         data = request.json
         minutes = int(minutes)
-        df = df[df.iloc[0].dropna().index]
 
-        rows_with_nan = []
-        for index, row in df.iterrows():
-                is_nan_series = row.isnull()
-                if is_nan_series.any():
-                        rows_with_nan.append(index)
-                
-        for row in rows_with_nan:
-                df.drop(row, inplace=True)
+        df = cleanDF(df)
 
-        df.fillna(value=0, inplace=True)
         if minutes > len(df):
                 minutes = len(df)-1
                 
@@ -230,17 +214,9 @@ def trade_coins(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         base = str(base)
-        df = df[df.iloc[0].dropna().index].set_index('index')
-        rows_with_nan = []
-        for index, row in df.iterrows():
-                is_nan_series = row.isnull()
-                if is_nan_series.any():
-                        rows_with_nan.append(index)
-                
-        for row in rows_with_nan:
-                df.drop(row, inplace=True)
 
-        df.fillna(value=0, inplace=True)
+        df = cleanDF(df)
+
         data = request.json
         trade_data = data['data']
         if base != 'USDT':
@@ -276,15 +252,8 @@ def ma_grid(base, minutes, investment):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         minutes = int(minutes)
         investment = int(investment)
-        df = df[df.iloc[0].dropna().index].set_index('index')
-        rows_with_nan = []
-        for index, row in df.iterrows():
-                is_nan_series = row.isnull()
-                if is_nan_series.any():
-                        rows_with_nan.append(index)
-                
-        for row in rows_with_nan:
-                df.drop(row, inplace=True)
+
+        df = cleanDF(df)
 
         data = request.json
         trade_data = data['data']
@@ -292,7 +261,7 @@ def ma_grid(base, minutes, investment):
         if base != 'USDT':
                 base_change = df[base][-minutes::minutes-1].pct_change().iloc[-1]
         else:
-                base_change = str(0.0)
+                base_change = '0.0'
 
         result_dict = {}
         df_data = {}
