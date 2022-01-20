@@ -9,7 +9,6 @@ def cleanDF(df):
     for row in rows_with_nan:
             df.drop(row, inplace=True)
 
-    df.fillna(value=0, inplace=True)
     return df
 
 def dropEmptyColumns(df):
