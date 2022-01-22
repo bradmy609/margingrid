@@ -38,7 +38,7 @@ def data_age():
 def all_tickers():
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         length = len(df)
-        frame = df.copy()
+        frame = df
         frame = frame[frame.iloc[0].dropna().index]
         frame.fillna(value=0, inplace=True)
         all_tickers = frame.drop('index', axis=1).columns.to_list()
@@ -51,10 +51,9 @@ def ma(ticker, period, quantity):
         ticker = str(ticker).upper()
         period = int(period)
         quantity = int(quantity)
-        frame = df.copy()
-        frame = frame[frame.iloc[0].dropna().index]
-        frame['index'] = pd.to_datetime(frame['index'], unit='s')
-        ndf = frame.set_index('index')
+        df = df[df.iloc[0].dropna().index]
+        df['index'] = pd.to_datetime(df['index'], unit='s')
+        ndf = df.set_index('index')
         ticker_df = ndf[[ticker]]
         rolling_ticker_df = ticker_df.rolling(period).mean().iloc[::period].rolling(quantity).mean().dropna(how='all')
 
@@ -71,7 +70,7 @@ def ma(ticker, period, quantity):
 def reroute(startMinutes, top, quantity, stopMinutes=0):
         df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         df = df[df.iloc[0].dropna().index]
-        
+
         startMinutes = int(startMinutes)
         if startMinutes > len(df):
                 startMinutes = len(df)
