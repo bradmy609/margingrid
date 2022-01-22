@@ -123,7 +123,7 @@ def hodl_table(minutes, investment):
                 percent_list.append(obj['percent'])
         res_df = minutes_df[ticker_list]
         res_df.loc[2]= res_df.pct_change().iloc[-1]
-        res_df['Index'] = ["Start Price", "Finish Price", "Percent Change"]
+        res_df.loc[:, 'index'] = ["Start Price", "Finish Price", "Percent Change"]
         res_df = res_df.set_index('Index')
         res_df.loc["Portfolio Percent"] = percent_list
         start_val_list = []
