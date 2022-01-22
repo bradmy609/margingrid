@@ -1,7 +1,9 @@
 def cleanDF(df):
-    keep_columns = [df.iloc[0].dropna().index]
-    drop_columns = [x for x in df.columns if x not in keep_columns]
-    df.drop(columns=drop_columns)
+    columns = df.iloc[0].dropna().index
+    keep_columns = columns.to_list()
+    #drop_columns = [x for x in df.columns if x in keep_columns]
+    df = df.loc[:, keep_columns]
+    #df.drop(columns=drop_columns)
 
     rows_with_nan = []
     for index, row in df.iterrows():
