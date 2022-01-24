@@ -7,6 +7,7 @@ from flask_cors import CORS
 from datetime import datetime
 from .execute_grid import execute_grid
 from .cleanDF import cleanDF
+from grids.ma_grid import ma_grid
  
 app = Flask(__name__, static_folder='../build')
 
@@ -122,7 +123,7 @@ def hodl_table(minutes, investment):
 
         if minutes > len(df):
                 minutes = len(df)-1
-                
+
         minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
         ticker_list = []
         percent_list = []
@@ -284,9 +285,10 @@ def ma_grid(base, minutes, investment):
                 if minutes + period >= len(df):
                         period = len(df) - minutes
                 pair = '{}/{}'.format(name, base)
-                ticker_quantity, ticker2_quantity, result, buy_trans, sell_trans = execute_grid(df, minutes, name, base, spread, orders, investment*percent, period, std)
 
-                result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': ticker2_quantity, 'trade_currency': ticker_quantity,
+                result, buy_trans, sell_trans, t1q, t2q, graph_lines = ma_grid(df, minutes, name, base, spread, orders, investment*percent, period, std)
+
+                result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': t2q, 'trade_currency': t1q,
                  'buy_transactions': len(buy_trans), 'sell_transactions': len(sell_trans), 'base_ticker': base, 'trade_ticker': name, 'pair': pair}
                 
                 df_data[pair] = [result, spread, orders, len(buy_trans), len(sell_trans), std]
