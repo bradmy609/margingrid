@@ -16,6 +16,8 @@ url = "mysql://admin:vertical@database-2.cood7ompdfrc.us-east-2.rds.amazonaws.co
 
 engine = create_engine(url)
 
+og_df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+
 # Serve React App
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -27,7 +29,8 @@ def serve(path):
 
 @app.route("/api/age")
 def data_age():
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         last_timestamp = df['index'].max()
         current_timestamp = datetime.now().timestamp()
 
@@ -36,7 +39,8 @@ def data_age():
 
 @app.route("/api/tickers")
 def all_tickers():
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         length = len(df)
         frame = df
         frame = frame[frame.iloc[0].dropna().index]
@@ -47,7 +51,8 @@ def all_tickers():
  
 @app.route("/api/ma/<ticker>/<period>/<quantity>")
 def ma(ticker, period, quantity):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         ticker = str(ticker).upper()
         period = int(period)
         quantity = int(quantity)
@@ -68,7 +73,8 @@ def ma(ticker, period, quantity):
 
 @app.route("/api/pricedelta/<startMinutes>/<stopMinutes>/<top>/<quantity>")
 def reroute(startMinutes, top, quantity, stopMinutes=0):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         df = df[df.iloc[0].dropna().index]
 
         startMinutes = int(startMinutes)
@@ -106,7 +112,8 @@ def reroute(startMinutes, top, quantity, stopMinutes=0):
 
 @app.route('/api/hodl/<minutes>/<investment>', methods = ['POST'])
 def hodl_table(minutes, investment):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         data = request.json
         minutes = int(minutes)
         investment = int(investment)
@@ -115,6 +122,7 @@ def hodl_table(minutes, investment):
 
         if minutes > len(df):
                 minutes = len(df)-1
+                
         minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
         ticker_list = []
         percent_list = []
@@ -162,7 +170,8 @@ def hodl_table(minutes, investment):
 
 @app.route('/api/borrow/<minutes>/<investment>', methods = ['POST'])
 def borrow_coins(minutes, investment):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         data = request.json
         minutes = int(minutes)
 
@@ -208,7 +217,8 @@ def borrow_coins(minutes, investment):
 
 @app.route('/api/static/<base>/<minutes>/<investment>', methods = ['POST'])
 def trade_coins(base, minutes, investment):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         minutes = int(minutes)
         investment = int(investment)
         base = str(base)
@@ -247,7 +257,8 @@ def trade_coins(base, minutes, investment):
 
 @app.route('/api/grid/ma/<base>/<minutes>/<investment>', methods = ['POST'])
 def ma_grid(base, minutes, investment):
-        df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+        df = og_df.copy()
         minutes = int(minutes)
         investment = int(investment)
 
