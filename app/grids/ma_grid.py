@@ -68,11 +68,12 @@ def initial_purchases(investment, ticker_price_list, base_list):
     # print("Buying initial coins... Buying {} of {} for {} USD. Buying {} of {} for {} USD.".format(t1q, ticker, investment/2, t2q, base, investment/2))
     return t1q, t2q
 
-def get_profit(t1q, price_list, t2q, base_list, ticker, base, result):
+def get_profit(t1q, price_list, t2q, base_list):
     t1v = t1q * price_list[-1]
     t2v = t2q * base_list[-1]
     result = t1v + t2v
-    print("Final quantities: {} of {}, {} of {}.\n Final value is: {}".format(t1q, ticker, t2q, base, result))
+    # print("Final quantities: {} of {}, {} of {}.\n Final value is: {}".format(t1q, ticker, t2q, base, result))
+    return result
 
 def get_price_lists(df, ticker, base, minutes):
     one = df[ticker]
@@ -185,6 +186,6 @@ def ma_grid(df, investment, ticker, base, minutes, spread, orders, period, std):
             sell_list, buy_list = filter_order_list(order_list, high_list, low_list, price_list, num)
     #     print("Sell List: {} Buy List: {}\n".format(len(sell_list), len(buy_list)))
     
-    graph_lines = get_graph_lines(df, ticker, minutes, buy_trans, sell_trans, order_list)
+    graph_lines = get_graph_lines(df, base, ticker, minutes, buy_trans, sell_trans, order_list)
     
     return result, buy_trans, sell_trans, t1q, t2q, graph_lines

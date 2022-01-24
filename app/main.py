@@ -7,7 +7,7 @@ from flask_cors import CORS
 from datetime import datetime
 from .execute_grid import execute_grid
 from .cleanDF import cleanDF
-from grids.ma_grid import ma_grid
+from .grids.ma_grid import ma_grid
  
 app = Flask(__name__, static_folder='../build')
 
@@ -31,7 +31,7 @@ def serve(path):
 @app.route("/api/age")
 def data_age():
         # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
-        df = og_df.copy()
+        df = og_df.loc[:]
         last_timestamp = df['index'].max()
         current_timestamp = datetime.now().timestamp()
 
@@ -188,7 +188,7 @@ def borrow_coins(minutes, investment):
         for obj in data['data']:
                 ticker_list.append(obj['name'])
                 percent_list.append(obj['percent'])
-        res_df = minutes_df[ticker_list]
+        res_df = minutes_df.loc[:, ticker_list]
         res_df.loc["Portfolio Percent"] = percent_list
 
         start_val_list = []
@@ -257,7 +257,7 @@ def trade_coins(base, minutes, investment):
         return result_dict
 
 @app.route('/api/grid/ma/<base>/<minutes>/<investment>', methods = ['POST'])
-def ma_grid(base, minutes, investment):
+def ma_dynamic_grid(base, minutes, investment):
         # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
         df = og_df.copy()
         minutes = int(minutes)
@@ -286,7 +286,7 @@ def ma_grid(base, minutes, investment):
                         period = len(df) - minutes
                 pair = '{}/{}'.format(name, base)
 
-                result, buy_trans, sell_trans, t1q, t2q, graph_lines = ma_grid(df, minutes, name, base, spread, orders, investment*percent, period, std)
+                result, buy_trans, sell_trans, t1q, t2q, graph_lines = ma_grid(df, investment*percent, name, base, minutes, spread, orders, period, std)
 
                 result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': t2q, 'trade_currency': t1q,
                  'buy_transactions': len(buy_trans), 'sell_transactions': len(sell_trans), 'base_ticker': base, 'trade_ticker': name, 'pair': pair}
