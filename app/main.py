@@ -286,7 +286,7 @@ def ma_dynamic_grid(base, minutes, investment):
                         period = len(df) - minutes
                 pair = '{}/{}'.format(name, base)
 
-                result, buy_trans, sell_trans, t1q, t2q, graph_lines = ma_grid(df, investment*percent, name, base, minutes, spread, orders, period, std)
+                result, buy_trans, sell_trans, t1q, t2q = ma_grid(df, investment*percent, name, base, minutes, spread, orders, period, std)
 
                 result_dict[name] = {'results': result, 'spread': spread, 'orders': orders, 'base_currency': t2q, 'trade_currency': t1q,
                  'buy_transactions': len(buy_trans), 'sell_transactions': len(sell_trans), 'base_ticker': base, 'trade_ticker': name, 'pair': pair}
