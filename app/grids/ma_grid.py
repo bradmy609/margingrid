@@ -90,31 +90,31 @@ def get_price_lists(df, ticker, base, minutes):
     
     return ticker_price_list, price_list, base_list
 
-def get_graph_lines(df, base, ticker, minutes, buy_trans, sell_trans, order_list):
-    ticker_df = df[ticker]
-    if base == 'USDT':
-        base_df = df['USDC']
-    else:
-        base_df = df[base]
+# def get_graph_lines(df, base, ticker, minutes, buy_trans, sell_trans, order_list):
+#     ticker_df = df[ticker]
+#     if base == 'USDT':
+#         base_df = df['USDC']
+#     else:
+#         base_df = df[base]
         
-    price_df = (ticker_df/base_df).iloc[-minutes:]
-    start = price_df.index[0]
-    over_start = price_df/price_df.iloc[0]
-    index = over_start.index
+#     price_df = (ticker_df/base_df).iloc[-minutes:]
+#     start = price_df.index[0]
+#     over_start = price_df/price_df.iloc[0]
+#     index = over_start.index
     
-    sell_mins = [x['minute'] for x in sell_trans]
-    buy_mins = [x['minute'] for x in buy_trans]
+#     sell_mins = [x['minute'] for x in sell_trans]
+#     buy_mins = [x['minute'] for x in buy_trans]
     
-    buy_prices = [over_start.iloc[x] for x in buy_mins]
-    sale_prices = [over_start.iloc[x] for x in sell_mins]
+#     buy_prices = [over_start.iloc[x] for x in buy_mins]
+#     sale_prices = [over_start.iloc[x] for x in sell_mins]
     
-    sale_x = [index[x]-start for x in sell_mins]
-    buy_x = [index[x]-start for x in buy_mins]
-    over_start.index = over_start.index-start
+#     sale_x = [index[x]-start for x in sell_mins]
+#     buy_x = [index[x]-start for x in buy_mins]
+#     over_start.index = over_start.index-start
     
-    order_list = (order_list/price_df.iloc[0])
+#     order_list = (order_list/price_df.iloc[0])
     
-    return {'ticker': ticker, 'price_line': over_start, 'buy_line':[buy_x, buy_prices], 'sell_line': [sale_x, sale_prices]}
+#     return {'ticker': ticker, 'price_line': over_start, 'buy_line':[buy_x, buy_prices], 'sell_line': [sale_x, sale_prices]}
 
 def ma_grid(df, investment, ticker, base, minutes, spread, orders, period, std):
     pd.set_option("display.precision", 9)
@@ -186,6 +186,6 @@ def ma_grid(df, investment, ticker, base, minutes, spread, orders, period, std):
             sell_list, buy_list = filter_order_list(order_list, high_list, low_list, price_list, num)
     #     print("Sell List: {} Buy List: {}\n".format(len(sell_list), len(buy_list)))
     
-    graph_lines = get_graph_lines(df, base, ticker, minutes, buy_trans, sell_trans, order_list)
+    # graph_lines = get_graph_lines(df, base, ticker, minutes, buy_trans, sell_trans, order_list)
     
-    return result, buy_trans, sell_trans, t1q, t2q, graph_lines
+    return result, buy_trans, sell_trans, t1q, t2q
