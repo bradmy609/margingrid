@@ -8,6 +8,12 @@ from datetime import datetime
 from .execute_grid import execute_grid
 from .cleanDF import cleanDF
 from .grids.ma_grid import ma_grid
+from .helpers.borrowResults import get_borrow_data
+from .helpers.hodlResults import get_hodl_results
+from .classes.Selling_Grid import Selling_Grid
+from .classes.Smart_Grid import Smart_Grid
+from .classes.Grapher import Grid_Grapher
+
  
 app = Flask(__name__, static_folder='../build')
 
@@ -17,7 +23,10 @@ url = "mysql://admin:vertical@database-2.cood7ompdfrc.us-east-2.rds.amazonaws.co
 
 engine = create_engine(url)
 
-og_df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
+og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 35000", con=engine).astype('float'))
+# vdf = cleanDF(pd.read_sql("SELECT * FROM usdt_vol LIMIT 0, 11000", con=engine).astype('float'))
+# rv_df = cleanDF(pd.read_sql("SELECT * FROM relative_value LIMIT 0, 1000", con=engine).astype('float'))
+# range_df = cleanDF(pd.read_sql("SELECT * FROM 24h_range LIMIT 0, 1000", con=engine).astype('float'))
 
 # Serve React App
 @app.route('/', defaults={'path': ''})
@@ -41,7 +50,7 @@ def data_age():
 @app.route("/api/tickers")
 def all_tickers():
         # df = pd.read_sql("SELECT * FROM usdt_last", con=engine).astype('float')
-        df = og_df.copy()
+        df = og_df.loc[:]
         length = len(df)
         frame = df
         frame = frame[frame.iloc[0].dropna().index]
@@ -118,58 +127,13 @@ def hodl_table(minutes, investment):
         data = request.json
         minutes = int(minutes)
         investment = int(investment)
-        
-        df = cleanDF(df)
 
         if minutes > len(df):
                 minutes = len(df)-1
 
-        minutes_df = df.iloc[-int(minutes)::int(minutes)-1]
-        ticker_list = []
-        percent_list = []
-        for obj in data['data']:
-                ticker_list.append(obj['name'])
-                percent_list.append(obj['percent'])
-        res_df = minutes_df.loc[:, ticker_list]
-        res_df.loc[2] = res_df.pct_change().iloc[-1]
-        res_df.loc[:, 'Index'] = ["Start Price", "Finish Price", "Percent Change"]
-        res_df = res_df.set_index('Index')
-        res_df.loc["Portfolio Percent"] = percent_list
-        start_val_list = []
-        quantity_list = []
-        finish_val_list = []
-        for ticker in ticker_list:
-                try:
-                        start_price = res_df[ticker].loc["Start Price"]
-                        percent = res_df[ticker].loc['Portfolio Percent']
-                        finish_price = res_df[ticker].loc["Finish Price"]
-                except:
-                        start_price = 0.001
-                        percent = res_df[ticker]['Portfolio Percent']
-                        finish_price = res_df[ticker]["Finish Price"]
-                quantity = (int(investment) * (int(percent)/100)) / float(start_price)
-                quantity_list.append(quantity)
-                start_val_list.append(int(investment) * (int(percent)/100))
-                finish_val_list.append(quantity * finish_price)
-        res_df.loc['Quantity of Coins'] = quantity_list
-        res_df.loc['Start Value (USD)'] = start_val_list
-        res_df.loc['Finish Value (USD)'] = finish_val_list
+        results = get_hodl_results(df, minutes, investment, data)
 
-        res_df.loc['Difference'] = res_df.loc['Finish Value (USD)'] - res_df.loc['Start Value (USD)']
-                
-        res_df = res_df.swapaxes('index', 'columns')
-        res_df = res_df.astype('float')
-        averages = res_df.mean()
-        totals = res_df.sum()
-        res_df.loc['Average'] = averages
-        res_df.loc['Total'] = totals
-        res_df = res_df.round(2)
-
-        total = res_df.loc['Total']['Finish Value (USD)']
-        dict_df = res_df.to_dict()
-        html_table = res_df.to_html()
-
-        return {'html': html_table, 'dict': dict_df, 'total': total}, 201
+        return results, 201
 
 
 # This borrow table does not return the results.
@@ -180,45 +144,16 @@ def borrow_coins(minutes, investment):
         df = og_df.copy()
         data = request.json
         minutes = int(minutes)
+        investment = int(investment)
 
-        df = cleanDF(df)
+        print({'minutes': minutes, 'investment': investment, 'data': data})
 
         if minutes > len(df):
                 minutes = len(df)-1
                 
-        minutes_df = df.iloc[[-int(minutes)]]
-        minutes_df.index = ["Start Price"]
-        ticker_list = []
-        percent_list = []
-        for obj in data['data']:
-                ticker_list.append(obj['name'])
-                percent_list.append(obj['percent'])
-        res_df = minutes_df.loc[:, ticker_list]
-        res_df.loc["Portfolio Percent"] = percent_list
+        result = get_borrow_data(df, minutes, investment, data)
 
-        start_val_list = []
-        quantity_list = []
-        for ticker in ticker_list:
-                start_price = res_df[ticker]["Start Price"]
-                percent = res_df[ticker]['Portfolio Percent']
-                quantity = (int(investment) * (int(percent)/100)) / float(start_price)
-                quantity_list.append(quantity)
-                start_val_list.append(int(investment) * (int(percent)/100))
-
-        res_df.loc['Liabilities (# of coins)'] = quantity_list
-        res_df.loc['Start Value (USD)'] = start_val_list
-
-        res_df = res_df.swapaxes('index', 'columns')
-        res_df = res_df.astype('float')
-        averages = res_df.mean()
-        totals = res_df.sum()
-        res_df.loc['Average'] = averages
-        res_df.loc['Total'] = totals
-
-        html_table = res_df.to_html()
-        dict_df = res_df.to_dict()
-
-        return {"html":html_table, "dict": dict_df}, 201
+        return result, 201
 
 
 @app.route('/api/static/<base>/<minutes>/<investment>', methods = ['POST'])
@@ -228,8 +163,6 @@ def trade_coins(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         base = str(base)
-
-        df = cleanDF(df)
 
         data = request.json
         trade_data = data['data']
@@ -268,8 +201,6 @@ def ma_dynamic_grid(base, minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
 
-        df = cleanDF(df)
-
         data = request.json
         trade_data = data['data']
 
@@ -305,6 +236,34 @@ def ma_dynamic_grid(base, minutes, investment):
         result_dict['base_change'] = str(base_change)
 
         return result_dict
+
+@app.route('/api/grid/smart/<minutes>/<investment>', methods=['POST'])
+def smart_grid_borrow(minutes, investment):
+        if not minutes or not investment:
+                return "Record not found", 400
+        minutes = int(minutes)
+        investment = int(investment)
+        data = request.json['data']
+        bs = data['borrowSettings']
+        ts = data['tradeSettings']
+        orders, spread, ticker, marketSell, onlySellAbove, period, gridType = bs.values()
+        selling_grid = Selling_Grid(og_df, investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType)
+
+        torders, tspread, tticker, updateFrequency, tperiod, tgridType, maInd, fillBot, repeatSells, repeatBuys = ts.values()
+        smart_grid = Smart_Grid(selling_grid, og_df, str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
+
+        smart_grid.execute_smart_grid()
+        grapher = Grid_Grapher(smart_grid)
+        results_table, profit, debt, assets = grapher.get_info()
+        cv = smart_grid.current_value
+        low_res_cv = cv[::100]
+        sgHtml = grapher.smart_grid_html()
+        selling_grid = grapher.selling_grid_html()
+        series_percents = grapher.percent_profit.dropna()*100
+        percent_profit = series_percents.to_list()
+        low_res_percent_profit = percent_profit[::100]
+        results = {'resultsTable': results_table, 'profit': profit, 'debt': debt, 'assets': assets, 'cv': low_res_cv, 'sgHtml': sgHtml, 'selling_grid': selling_grid, 'percent_profit': low_res_percent_profit}
+        return results, 201
 
 
 
