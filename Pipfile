@@ -10,6 +10,11 @@ flask-cors = "*"
 pandas = "*"
 sqlalchemy = "*"
 mysqlclient = "*"
+matplotlib = "*"
+io = "*"
+base64 = "*"
+numpy = "*"
+
 
 [dev-packages]
 
