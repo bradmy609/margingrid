@@ -7,13 +7,13 @@ name = "pypi"
 flask = "*"
 gunicorn = "*"
 flask-cors = "*"
+numpy = "*"
 pandas = "*"
 sqlalchemy = "*"
 mysqlclient = "*"
 matplotlib = "*"
 io = "*"
 base64 = "*"
-numpy = "*"
 
 
 [dev-packages]
