@@ -4,17 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pandas = "*"
+numpy = "*"
 flask = "*"
 gunicorn = "*"
-flask-cors = "*"
-numpy = "*"
-pandas = "*"
-sqlalchemy = "*"
 mysqlclient = "*"
 matplotlib = "*"
-io = "*"
-base64 = "*"
-
+flask-cors = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 
