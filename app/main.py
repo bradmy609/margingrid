@@ -23,7 +23,7 @@ url = "mysql://admin:vertical@database-2.cood7ompdfrc.us-east-2.rds.amazonaws.co
 
 engine = create_engine(url)
 
-og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 35000", con=engine).astype('float'))
+og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
 # vdf = cleanDF(pd.read_sql("SELECT * FROM usdt_vol LIMIT 0, 11000", con=engine).astype('float'))
 # rv_df = cleanDF(pd.read_sql("SELECT * FROM relative_value LIMIT 0, 1000", con=engine).astype('float'))
 # range_df = cleanDF(pd.read_sql("SELECT * FROM 24h_range LIMIT 0, 1000", con=engine).astype('float'))
