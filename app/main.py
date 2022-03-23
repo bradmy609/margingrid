@@ -26,7 +26,7 @@ engine = create_engine(url)
 vdf = cleanDF(pd.read_sql('SELECT * FROM usdt_vol LIMIT 0, 1000', con=engine).astype('float'))
 top_30_vol = vdf.drop('index', axis=1).mean().sort_values().tail(30)
 top_30_vol_tickers = top_30_vol.index.to_list()
-top_30_vol_tickers = top_30_vol_tickers.append('index')
+top_30_vol_tickers.append('index')
 top_30_vol_tickers_string = ', '.join(top_30_vol_tickers)
 
 # og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
