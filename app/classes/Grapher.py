@@ -9,7 +9,7 @@ class Grid_Grapher:
     def __init__(self, grid):
         self.grid = grid
         self.selling_grid = grid.selling_grid
-        self.percent_profit = (pd.Series(self.grid.current_assets) - pd.Series(self.grid.selling_grid.debt_list)) / pd.Series(self.grid.selling_grid.debt_list)
+        self.percent_profit = ((pd.Series(self.grid.current_assets) - pd.Series(self.grid.selling_grid.debt_list)) / pd.Series(self.grid.selling_grid.debt_list)).fillna(0)
         
         self.slow = grid.ma
         self.fast = grid.fast_ma

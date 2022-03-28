@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, make_response
+from flask import Flask, request
 import pandas as pd
 from sqlalchemy import *
 from flask.helpers import send_from_directory
@@ -271,9 +271,3 @@ def smart_grid_borrow(minutes, investment):
         low_res_percent_profit = percent_profit[::100]
         results = {'resultsTable': results_table, 'profit': profit, 'debt': debt, 'assets': assets, 'cv': low_res_cv, 'sgHtml': sgHtml, 'selling_grid': selling_grid, 'percent_profit': low_res_percent_profit}
         return results, 201
-
-
-
-                        
-        
-        
