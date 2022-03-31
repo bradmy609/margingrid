@@ -30,7 +30,7 @@ engine = create_engine(url)
 # top_30_vol_tickers_string = ', '.join(top_30_vol_tickers)
 # og_df = cleanDF(pd.read_sql('SELECT {} FROM usdt_last LIMIT 0, 35000'.format(top_30_vol_tickers_string), con=engine).astype('float'))
 
-og_df = cleanDF(pd.read_sql("SELECT * FROM PolygonVW LIMIT 0, 300000", con=engine))
+og_df = cleanDF(pd.read_sql("SELECT * FROM PolygonVW LIMIT 100000, 300000", con=engine))
 og_df = og_df.drop('index', axis=1).rename({'ts': 'index'}, axis=1).astype('float')
 
 # og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
