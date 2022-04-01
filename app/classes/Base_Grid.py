@@ -1,5 +1,5 @@
 class Base_Grid:
-    def __init__(self, df, investment, minutes, orders, spread, period, ticker, grid_type):
+    def __init__(self, df, investment, minutes, orders, spread, period, ticker, grid_type, base='BTC'):
         self.df = df
         if len(df) > minutes:
             self.limited_df = df.iloc[len(df)-minutes:]
@@ -13,8 +13,12 @@ class Base_Grid:
         self.spread = int(spread)
         self.period = int(period)
         self.ticker = str(ticker)
-        self.series = self.limited_df.loc[:, self.ticker].astype('float')
-        self.entire_series = self.df.loc[:, self.ticker]
+        if base == 'USDT':
+            self.series = self.limited_df.loc[:, self.ticker].astype('float')
+            self.entire_series = self.df.loc[:, self.ticker]
+        elif base == 'BTC':
+            self.series = self.limited_df.loc[:, self.ticker].astype('float')/self.limited_df.loc[:, 'BTC'].astype('float')
+            self.entire_series = self.df.loc[:, self.ticker]/self.df.loc[:, 'BTC']
         self.start_price = float(self.series.iloc[0])
         self.grid_type = grid_type
         

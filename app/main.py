@@ -32,7 +32,7 @@ engine = create_engine(url)
 
 temp = pd.read_sql('Select * FROM PolygonVW Limit 0, 1', con=engine)
 temp_columns = ','.join(temp.drop('index', axis=1).columns.to_list())
-og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 100000, 300000".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
+og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 200000, 300000".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
 
 # og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
 # vdf = cleanDF(pd.read_sql("SELECT * FROM usdt_vol LIMIT 0, 11000", con=engine).astype('float'))
@@ -260,6 +260,7 @@ def smart_grid_borrow(minutes, investment):
         data = request.json['data']
         bs = data['borrowSettings']
         ts = data['tradeSettings']
+        print(bs.values())
         orders, spread, ticker, marketSell, onlySellAbove, period, gridType = bs.values()
         selling_grid = Selling_Grid(og_df, investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType)
 
