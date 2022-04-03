@@ -32,7 +32,7 @@ engine = create_engine(url)
 
 temp = pd.read_sql('Select * FROM PolygonVW Limit 0, 1', con=engine)
 temp_columns = ','.join(temp.drop('index', axis=1).columns.to_list())
-og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 200000, 300000".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
+og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 300000, 249780".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
 
 # og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
 # vdf = cleanDF(pd.read_sql("SELECT * FROM usdt_vol LIMIT 0, 11000", con=engine).astype('float'))

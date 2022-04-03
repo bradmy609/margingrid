@@ -4,7 +4,7 @@ import pandas as pd
 class Smart_Grid(Base_Grid):
     def __init__(self, selling_grid, df, ticker, orders, spread, investment, minutes,
                  update_frequency=100, period=3000, grid_type='dynamic', ma_ind=True, fill_bot=True, repeat_buys=False,
-                repeat_sells=False):
+                repeat_sells=False, base='BTC'):
         
         self.grid_type = grid_type
         self.ma_ind = ma_ind
@@ -13,7 +13,7 @@ class Smart_Grid(Base_Grid):
         self.repeat_sells = repeat_sells
         self.selling_grid = selling_grid
         
-        super().__init__(df, investment, minutes, orders, spread, period, ticker, grid_type)
+        super().__init__(df, investment, minutes, orders, spread, period, ticker, grid_type, base=base)
         
         self.sell_ticker = selling_grid.ticker
         self.update_frequency = update_frequency
