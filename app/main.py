@@ -32,7 +32,7 @@ engine = create_engine(url)
 
 temp = pd.read_sql('Select * FROM PolygonVW Limit 0, 1', con=engine)
 temp_columns = ','.join(temp.drop('index', axis=1).columns.to_list())
-og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 300000, 249780".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
+og_df = cleanDF(pd.read_sql("SELECT {} FROM PolygonVW LIMIT 400000, 249780".format(temp_columns), con=engine).rename({'ts': 'index'}, axis=1).astype('float32'))
 
 # og_df = cleanDF(pd.read_sql("SELECT * FROM usdt_last LIMIT 0, 15000", con=engine).astype('float'))
 # vdf = cleanDF(pd.read_sql("SELECT * FROM usdt_vol LIMIT 0, 11000", con=engine).astype('float'))
@@ -258,14 +258,20 @@ def smart_grid_borrow(minutes, investment):
         minutes = int(minutes)
         investment = int(investment)
         data = request.json['data']
+        s = data['settings']
         bs = data['borrowSettings']
         ts = data['tradeSettings']
-        print(bs.values())
+        offset = int(s['offset'])
+        base = str(s['base'])
+        if (minutes + offset) > len(og_df):
+                offset = 0
+                minutes = len(og_df)
+
         orders, spread, ticker, marketSell, onlySellAbove, period, gridType = bs.values()
-        selling_grid = Selling_Grid(og_df, investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType)
+        selling_grid = Selling_Grid(og_df[offset:], investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType, base=base)
 
         torders, tspread, tticker, updateFrequency, tperiod, tgridType, maInd, fillBot, repeatSells, repeatBuys = ts.values()
-        smart_grid = Smart_Grid(selling_grid, og_df, str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
+        smart_grid = Smart_Grid(selling_grid, og_df[offset:], str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
 
         smart_grid.execute_smart_grid()
         grapher = Grid_Grapher(smart_grid)

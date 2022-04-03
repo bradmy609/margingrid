@@ -63,7 +63,7 @@ class Smart_Grid(Base_Grid):
     def get_stop_line(self):
         stop_line = {}
         for count, val in self.dstd.items():
-            if self.diff[count] < val and self.diff[count] > -val:
+            if self.diff[count] < val and self.diff[count] > -val and self.ma_ind == True:
                 stop_line[count] = val
             else:
                 stop_line[count] = None
