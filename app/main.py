@@ -268,11 +268,15 @@ def smart_grid_borrow(minutes, investment):
                 minutes = len(og_df)
 
         orders, spread, ticker, marketSell, onlySellAbove, period, gridType = bs.values()
-        selling_grid = Selling_Grid(og_df[offset:], investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType, base=base)
-
+        if offset != 0:
+                selling_grid = Selling_Grid(og_df[:-offset], investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType, base=base)
+        else:
+                selling_grid = Selling_Grid(og_df, investment, minutes, int(orders), int(spread), str(ticker), marketSell, onlySellAbove, int(period), gridType, base=base)
         torders, tspread, tticker, updateFrequency, tperiod, tgridType, maInd, fillBot, repeatSells, repeatBuys = ts.values()
-        smart_grid = Smart_Grid(selling_grid, og_df[offset:], str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
-
+        if offset != 0:
+                smart_grid = Smart_Grid(selling_grid, og_df[:-offset], str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
+        else:
+                smart_grid = Smart_Grid(selling_grid, og_df, str(tticker), int(torders), int(tspread), investment, minutes, int(updateFrequency), int(tperiod), str(tgridType), maInd, fillBot, repeatSells, repeatBuys)
         smart_grid.execute_smart_grid()
         grapher = Grid_Grapher(smart_grid)
         results_table, profit, debt, assets = grapher.get_info()
