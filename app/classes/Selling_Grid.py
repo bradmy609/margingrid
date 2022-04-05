@@ -7,7 +7,7 @@ class Selling_Grid(Base_Grid):
     def __init__(self, df, investment, minutes, orders, spread, ticker, market_sell=True, only_above=True,
                  period=1000, grid_type='static', base='BTC'):
         
-        super().__init__(df, investment, minutes, orders, spread, period, ticker, grid_type, base='BTC')
+        super().__init__(df, investment, minutes, orders, spread, period, ticker, grid_type, base=base)
         
         self.grid_type = grid_type
         self.market_sell = market_sell

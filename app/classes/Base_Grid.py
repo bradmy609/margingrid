@@ -71,4 +71,3 @@ class Base_Grid:
         else:
             print("No '.' value in string number.")
         return num
-        print('orders are: {}'.format(orders))
