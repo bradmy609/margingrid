@@ -1,0 +1,64 @@
+.SGForm{
+    border: 1px solid black;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 200px;
+    margin-left: 200px;
+  }
+
+select {
+    width: 80px;
+    height: 25px;
+    font-size: small;
+    text-align: center;
+}
+
+input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+}
+
+.description {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 200px;
+  margin-left: 200px;
+}
+
+.inputTable {
+  table-layout: fixed; 
+  width: 100%;
+}
+
+#executeGrid {
+  width: 9%;
+}
+
+.graphContainer {
+  border: 1px solid black;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 225px;
+  margin-left: 225px;
+}
+
+img {
+  text-align: left;
+}
+
+.imageContainer {
+  margin: auto;
+  float: left;
+  width: 49%;
+  padding: 5px;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+#parenthesis {
+  font: italic;
+}
